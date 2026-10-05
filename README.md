@@ -1,21 +1,45 @@
 # Company Financial Health Dashboard
 
-A beginner-friendly Flask project for CMU 15-113 Project 2.
+A Flask web app for CMU 15-113 Project 2 that lets users search for a public company ticker, fetch real SEC EDGAR Company Facts data, calculate financial metrics, visualize annual trends, and generate a plain-English AI explanation of the calculated results.
 
-The app lets a user search for a public company ticker and view financial data from SEC EDGAR Company Facts.
+This project is for educational financial analysis only and is not investment advice.
+
+## Features
+
+- Search by ticker symbol, such as `AAPL`, `MSFT`, `NKE`, or `KO`
+- Fetch real company data from the SEC EDGAR Company Facts API
+- Convert ticker symbols into SEC CIK identifiers
+- Extract annual 10-K financial facts from raw XBRL-style SEC data
+- Calculate revenue growth, profit margin, operating margin, liabilities/assets, and return on assets
+- Display interactive Chart.js visualizations for performance, margins, and balance sheet trends
+- Generate programmatic key observations from the latest fiscal year versus the prior fiscal year
+- Optionally generate an OpenAI-powered explanation using only the app's calculated metrics and observations
+- Handle invalid tickers, missing SEC concepts, and missing OpenAI configuration with readable errors
 
 ## Architecture
 
-Browser -> Flask backend -> SEC API later -> Python calculations -> Flask JSON response -> JavaScript dashboard
+```text
+Browser
+  -> Flask backend
+  -> SEC ticker lookup
+  -> SEC Company Facts API
+  -> Python metric extraction and calculations
+  -> Flask JSON response
+  -> JavaScript dashboard and Chart.js visualizations
+  -> optional OpenAI explanation
+```
+
+The frontend does not call the SEC or OpenAI APIs directly. Flask handles those requests so API keys stay server-side and SEC CORS issues are avoided.
 
 ## Project Structure
 
 ```text
 .
-├── app.py
-├── sec_client.py
-├── financial_metrics.py
-├── requirements.txt
+├── app.py                 # Flask routes
+├── sec_client.py          # SEC ticker lookup and Company Facts requests
+├── financial_metrics.py   # XBRL concept extraction and financial calculations
+├── ai_explainer.py        # OpenAI explanation helper
+├── requirements.txt       # Python dependencies
 ├── README.md
 ├── prompt_log.md
 ├── templates/
@@ -25,7 +49,7 @@ Browser -> Flask backend -> SEC API later -> Python calculations -> Flask JSON r
     └── app.js
 ```
 
-## Setup
+## Local Setup
 
 Create and activate a virtual environment:
 
@@ -40,25 +64,22 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-Create a local `.env` file for your OpenAI API key:
+Create a local `.env` file:
 
 ```bash
 touch .env
 ```
 
-Add your API key to `.env`:
+Add your OpenAI API key:
 
 ```text
 OPENAI_API_KEY=your_api_key_here
-```
-
-You can optionally choose the OpenAI model in `.env`:
-
-```text
 OPENAI_MODEL=gpt-5-mini
 ```
 
-Never commit your OpenAI API key. This project keeps `.env` ignored in `.gitignore`, but you should still be careful not to paste secrets into code, screenshots, commits, or shared files.
+`OPENAI_MODEL` is optional because the app defaults to `gpt-5-mini`.
+
+Never commit `.env` or any API key. This repository's `.gitignore` excludes `.env`.
 
 Run the app:
 
@@ -66,20 +87,70 @@ Run the app:
 python app.py
 ```
 
-Open the app in your browser:
+Open:
 
 ```text
 http://127.0.0.1:5001
 ```
 
-## Current Behavior
+## API Routes
 
-- Homepage route: `/`
-- API route: `/api/company/<ticker>`
-- Real SEC EDGAR Company Facts data is fetched by ticker
-- The dashboard shows a financial summary table and a Chart.js revenue/net income chart
+### `GET /api/company/<ticker>`
 
-## Next Steps
+Returns calculated dashboard data for a ticker.
 
-- Add more metric calculations in `financial_metrics.py`
-- Improve error handling for missing or incomplete SEC data
+Example:
+
+```text
+http://127.0.0.1:5001/api/company/AAPL
+```
+
+### `GET /api/explain/<ticker>`
+
+Returns an AI-generated explanation of the already-calculated dashboard data.
+
+Example:
+
+```text
+http://127.0.0.1:5001/api/explain/AAPL
+```
+
+If `OPENAI_API_KEY` is missing, this route returns a readable JSON error instead of crashing.
+
+## Deployment
+
+This app can be deployed as a Python web service on Render.
+
+Render settings:
+
+```text
+Build command: pip install -r requirements.txt
+Start command: gunicorn app:app
+```
+
+Environment variables:
+
+```text
+OPENAI_API_KEY=your_api_key_here
+OPENAI_MODEL=gpt-5-mini
+```
+
+Do not upload `.env` to GitHub or Render. Add environment variables through Render's dashboard.
+
+## How To Explain The Code
+
+The core data flow is:
+
+```text
+Ticker -> SEC ticker lookup -> CIK -> Company Facts JSON -> XBRL concept extraction -> annual 10-K filtering -> financial calculations -> JSON response -> dashboard charts -> optional AI explanation
+```
+
+Important files:
+
+- `app.py`: Defines the Flask routes.
+- `sec_client.py`: Converts tickers into SEC CIKs and fetches raw SEC data.
+- `financial_metrics.py`: Extracts annual financial data and calculates ratios and observations.
+- `static/app.js`: Fetches backend JSON and renders tables, charts, tabs, observations, and AI explanation text.
+- `ai_explainer.py`: Sends only structured calculated metrics to OpenAI for plain-English explanation.
+
+The AI feature does not fetch company data or invent numbers. It only explains the structured metrics already calculated by the Python backend.

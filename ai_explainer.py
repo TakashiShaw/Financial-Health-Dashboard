@@ -19,12 +19,15 @@ DISCLAIMER = "This is educational analysis only and is not investment advice."
 
 
 class AIExplainerError(Exception):
+    """Custom error for OpenAI problems that should appear cleanly in the UI."""
+
     def __init__(self, message, status_code=502):
         super().__init__(message)
         self.status_code = status_code
 
 
 def generate_financial_explanation(dashboard_data):
+    """Send calculated dashboard data to OpenAI and return plain-English text."""
     api_key = os.environ.get("OPENAI_API_KEY")
 
     if not api_key:
@@ -44,6 +47,8 @@ def generate_financial_explanation(dashboard_data):
     explanation_data = build_explanation_data(dashboard_data)
 
     try:
+        # The model receives only the numbers and observations already created
+        # by this app. It is not allowed to fetch or invent financial data.
         response = client.responses.create(
             model=model,
             reasoning={"effort": "minimal"},
@@ -81,6 +86,7 @@ def generate_financial_explanation(dashboard_data):
 
 
 def build_explanation_data(dashboard_data):
+    """Keep the AI prompt small and structured instead of sending raw SEC JSON."""
     overview = dashboard_data["overview"]
     metrics = dashboard_data["metrics"]
 

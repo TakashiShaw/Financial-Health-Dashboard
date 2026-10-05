@@ -9,6 +9,8 @@ from datetime import date
 
 
 CONCEPTS = {
+    # Companies do not always use the same XBRL tag for the same idea.
+    # Each list starts with the preferred tag, then tries fallback tags.
     "revenue": [
         "RevenueFromContractWithCustomerExcludingAssessedTax",
         "Revenues",
@@ -46,6 +48,7 @@ class FinancialDataError(Exception):
 
 
 def safe_divide(numerator, denominator):
+    """Return None instead of crashing when a ratio cannot be calculated."""
     if numerator is None or denominator in (None, 0):
         return None
     return numerator / denominator
@@ -118,6 +121,8 @@ def build_observations(annual_data):
     if len(annual_data) < 2:
         return []
 
+    # The observations compare the newest year with the year immediately before
+    # it. This keeps the text factual and explainable.
     previous_year = annual_data[-2]
     latest_year = annual_data[-1]
     observations = []
@@ -178,6 +183,7 @@ def build_observations(annual_data):
 
 
 def is_annual_10k_fact(fact):
+    """Return True for annual 10-K facts and skip quarterly/interim facts."""
     form = (fact.get("form") or "").upper()
     fiscal_period = (fact.get("fp") or "").upper()
 
@@ -269,6 +275,8 @@ def extract_concept_series(us_gaap, concept_names):
         usd_facts = concept.get("units", {}).get("USD", [])
         annual_facts = latest_annual_fact_by_year(usd_facts)
 
+        # Earlier concept names have priority. Fallback concepts only fill
+        # years that are still missing.
         for year, fact in annual_facts.items():
             if year not in values_by_year:
                 values_by_year[year] = fact["val"]
@@ -277,6 +285,7 @@ def extract_concept_series(us_gaap, concept_names):
 
 
 def build_annual_rows(series_by_metric):
+    """Combine separate metric series into one row per fiscal year."""
     all_years = sorted(
         {
             year
@@ -299,6 +308,8 @@ def build_annual_rows(series_by_metric):
         if revenue is None or net_income is None:
             continue
 
+        # Values stay as raw dollars in the API. The frontend converts them to
+        # billions only for display.
         row = {
             "year": year,
             "revenue": revenue,
@@ -322,6 +333,7 @@ def build_annual_rows(series_by_metric):
 
 
 def build_dashboard_data(company_facts):
+    """Create the final JSON shape consumed by static/app.js."""
     us_gaap = get_us_gaap_facts(company_facts)
 
     series_by_metric = {}

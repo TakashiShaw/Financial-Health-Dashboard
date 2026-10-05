@@ -3,6 +3,8 @@ from flask import Flask, jsonify, render_template
 try:
     from dotenv import load_dotenv
 except ImportError:
+    # The app can still run without python-dotenv; deployed hosts usually
+    # provide environment variables directly.
     def load_dotenv():
         return False
 
@@ -23,6 +25,7 @@ def index():
 
 @app.route("/api/company/<ticker>")
 def company_api(ticker):
+    """Main data endpoint: ticker -> SEC data -> calculated dashboard JSON."""
     try:
         company_facts = get_company_facts(ticker)
         dashboard_data = build_dashboard_data(company_facts)
@@ -35,6 +38,7 @@ def company_api(ticker):
 
 @app.route("/api/explain/<ticker>")
 def explain_api(ticker):
+    """AI endpoint: reuse calculated data, then ask OpenAI to explain it."""
     try:
         company_facts = get_company_facts(ticker)
         dashboard_data = build_dashboard_data(company_facts)

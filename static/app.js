@@ -2,6 +2,7 @@ let charts = {};
 let activeSection = "overview";
 let currentTicker = "AAPL";
 
+// Cache the DOM elements the script updates often.
 const form = document.querySelector("#search-form");
 const tickerInput = document.querySelector("#ticker-input");
 const message = document.querySelector("#message");
@@ -35,6 +36,8 @@ async function loadCompany(ticker) {
     showMessage("");
 
     try {
+        // Ask Flask for the already-cleaned dashboard JSON. The browser never
+        // calls the SEC API directly.
         const response = await fetch(`/api/company/${cleanedTicker}`);
         const data = await response.json();
 
@@ -60,6 +63,7 @@ async function generateAIExplanation() {
     showAIExplanation("Generating explanation...", false);
 
     try {
+        // The backend keeps the OpenAI API key secret and returns only text.
         const response = await fetch(`/api/explain/${currentTicker}`);
         const data = await response.json();
 
@@ -94,6 +98,7 @@ function switchSection(sectionName) {
 }
 
 function renderDashboard(data) {
+    // This function is the bridge from backend JSON to visible HTML.
     currentTicker = data.ticker;
     document.querySelector("#company-name").textContent = data.companyName;
     document.querySelector("#ticker-badge").textContent = data.ticker;
@@ -125,6 +130,8 @@ function renderOverview(data) {
 }
 
 function renderPerformance(annualData) {
+    // Tables are built from annualData so every ticker can have a different
+    // number of available years.
     const rows = annualData.map(function (yearData) {
         return [
             yearData.year,
@@ -199,6 +206,8 @@ function renderObservations(observations) {
 }
 
 function renderCharts(annualData) {
+    // Chart.js does not like reusing old chart objects, so destroy them before
+    // drawing the next company's charts.
     destroyCharts();
 
     renderOverviewChart(annualData);
@@ -363,6 +372,8 @@ function toPercentNumber(value) {
 }
 
 function filterMissingDatasets(datasets) {
+    // If a company is missing a metric for every year, hide that chart series
+    // instead of showing an empty legend item.
     return datasets.filter(function (dataset) {
         return dataset.data.some(function (value) {
             return value !== null && value !== undefined && !Number.isNaN(value);

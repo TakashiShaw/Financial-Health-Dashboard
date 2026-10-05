@@ -28,6 +28,8 @@ _ticker_cache = None
 
 
 class SecClientError(Exception):
+    """Custom error so Flask can return clean JSON messages and status codes."""
+
     def __init__(self, message, status_code=502):
         super().__init__(message)
         self.status_code = status_code
@@ -74,6 +76,8 @@ def get_company_tickers():
     """Return SEC's ticker lookup data, using a small in-memory cache."""
     global _ticker_cache
 
+    # The ticker list rarely changes during one app session, so this avoids
+    # downloading it again for every search.
     if _ticker_cache is None:
         _ticker_cache = fetch_json(COMPANY_TICKERS_URL)
 
@@ -110,6 +114,8 @@ def find_company_by_ticker(ticker):
 
 def get_company_facts(ticker):
     """Return raw SEC Company Facts data plus simple company metadata."""
+    # SEC Company Facts needs a CIK, so the first step is converting the user's
+    # ticker search into the company's official SEC identifier.
     company = find_company_by_ticker(ticker)
     cik = format_cik(company["cik_str"])
     company_facts_url = COMPANY_FACTS_URL.format(cik=cik)
