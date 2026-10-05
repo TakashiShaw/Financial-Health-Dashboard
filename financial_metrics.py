@@ -23,6 +23,8 @@ CONCEPTS = {
         "NetIncomeLossAvailableToCommonStockholdersBasic",
     ],
     "operating_income": [
+        # Only include concepts that directly mean operating income.
+        # Do not use pretax income concepts as a substitute.
         "OperatingIncomeLoss",
     ],
     "assets": [

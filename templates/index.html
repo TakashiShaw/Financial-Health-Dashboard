@@ -36,65 +36,175 @@
         </section>
 
         <nav class="section-tabs" aria-label="Dashboard sections">
-            <a href="#" class="active-tab">Overview</a>
-            <span>Performance</span>
-            <span>Margins</span>
-            <span>Balance Sheet</span>
+            <button class="tab-button active-tab" type="button" data-section="overview">Overview</button>
+            <button class="tab-button" type="button" data-section="performance">Performance</button>
+            <button class="tab-button" type="button" data-section="margins">Margins</button>
+            <button class="tab-button" type="button" data-section="balance">Balance Sheet</button>
         </nav>
 
         <p id="message" class="message" role="status"></p>
 
         <section class="financial-section" aria-label="Financial overview">
-            <div class="section-title-row">
-                <div>
-                    <h2>Financial Overview</h2>
-                    <p>Annual figures from SEC Company Facts data</p>
+            <div id="overview-panel" class="tab-panel active-panel">
+                <div class="section-title-row">
+                    <div>
+                        <h2>Financial Overview</h2>
+                        <p>Annual figures from SEC Company Facts data</p>
+                    </div>
+                    <span>USD billions unless noted</span>
                 </div>
-                <span>USD billions unless noted</span>
+
+                <div class="financial-layout">
+                    <div class="summary-table-wrap">
+                        <table class="summary-table">
+                            <thead>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th>Latest FY</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Revenue</td>
+                                    <td id="revenue-year">--</td>
+                                    <td id="revenue-card">--</td>
+                                </tr>
+                                <tr>
+                                    <td>Net Income</td>
+                                    <td id="net-income-year">--</td>
+                                    <td id="net-income-card">--</td>
+                                </tr>
+                                <tr>
+                                    <td>Profit Margin</td>
+                                    <td id="profit-margin-year">--</td>
+                                    <td id="profit-margin-card">--</td>
+                                </tr>
+                                <tr>
+                                    <td>Debt to Assets</td>
+                                    <td id="debt-assets-year">--</td>
+                                    <td id="debt-assets-card">--</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="chart-area">
+                        <div class="chart-heading">
+                            <h3>Revenue and Net Income</h3>
+                            <p>Annual trend</p>
+                        </div>
+                        <div class="chart-wrap">
+                            <canvas id="overview-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="financial-layout">
-                <div class="summary-table-wrap">
-                    <table class="summary-table">
-                        <thead>
-                            <tr>
-                                <th>Metric</th>
-                                <th>Latest FY</th>
-                                <th>Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Revenue</td>
-                                <td id="revenue-year">--</td>
-                                <td id="revenue-card">--</td>
-                            </tr>
-                            <tr>
-                                <td>Net Income</td>
-                                <td id="net-income-year">--</td>
-                                <td id="net-income-card">--</td>
-                            </tr>
-                            <tr>
-                                <td>Profit Margin</td>
-                                <td id="profit-margin-year">--</td>
-                                <td id="profit-margin-card">--</td>
-                            </tr>
-                            <tr>
-                                <td>Debt to Assets</td>
-                                <td id="debt-assets-year">--</td>
-                                <td id="debt-assets-card">--</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <div id="performance-panel" class="tab-panel">
+                <div class="section-title-row">
+                    <div>
+                        <h2>Performance</h2>
+                        <p>Revenue growth plus revenue and net income trends</p>
+                    </div>
+                    <span>Growth shown as annual percentage</span>
                 </div>
 
-                <div class="chart-area">
-                    <div class="chart-heading">
-                        <h3>Revenue and Net Income</h3>
-                        <p>Annual trend</p>
+                <div class="financial-layout">
+                    <div class="summary-table-wrap">
+                        <table class="summary-table">
+                            <thead>
+                                <tr>
+                                    <th>Year</th>
+                                    <th>Revenue</th>
+                                    <th>Net Income</th>
+                                    <th>Revenue Growth</th>
+                                </tr>
+                            </thead>
+                            <tbody id="performance-table-body"></tbody>
+                        </table>
                     </div>
-                    <div class="chart-wrap">
-                        <canvas id="financial-chart"></canvas>
+
+                    <div class="chart-area">
+                        <div class="chart-heading">
+                            <h3>Performance Trend</h3>
+                            <p>Revenue, net income, and growth</p>
+                        </div>
+                        <div class="chart-wrap">
+                            <canvas id="performance-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="margins-panel" class="tab-panel">
+                <div class="section-title-row">
+                    <div>
+                        <h2>Margins</h2>
+                        <p>Profitability as a percentage of revenue</p>
+                    </div>
+                    <span>Percent of revenue</span>
+                </div>
+
+                <div class="financial-layout">
+                    <div class="summary-table-wrap">
+                        <table class="summary-table">
+                            <thead>
+                                <tr>
+                                    <th>Year</th>
+                                    <th>Net Profit Margin</th>
+                                    <th>Operating Margin</th>
+                                </tr>
+                            </thead>
+                            <tbody id="margins-table-body"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="chart-area">
+                        <div class="chart-heading">
+                            <h3>Margin Trend</h3>
+                            <p>Annual percentages</p>
+                        </div>
+                        <div class="chart-wrap">
+                            <canvas id="margins-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="balance-panel" class="tab-panel">
+                <div class="section-title-row">
+                    <div>
+                        <h2>Balance Sheet</h2>
+                        <p>Assets, liabilities, cash, and leverage</p>
+                    </div>
+                    <span>USD billions unless noted</span>
+                </div>
+
+                <div class="financial-layout">
+                    <div class="summary-table-wrap">
+                        <table class="summary-table">
+                            <thead>
+                                <tr>
+                                    <th>Year</th>
+                                    <th>Assets</th>
+                                    <th>Liabilities</th>
+                                    <th>Cash</th>
+                                    <th>Liabilities / Assets</th>
+                                </tr>
+                            </thead>
+                            <tbody id="balance-table-body"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="chart-area">
+                        <div class="chart-heading">
+                            <h3>Assets, Liabilities, and Cash</h3>
+                            <p>Annual balance sheet trend</p>
+                        </div>
+                        <div class="chart-wrap">
+                            <canvas id="balance-chart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
