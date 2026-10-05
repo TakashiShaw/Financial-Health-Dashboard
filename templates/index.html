@@ -222,6 +222,25 @@
                 <li>Loading observations...</li>
             </ul>
         </section>
+
+        <section class="ai-section" aria-label="AI explanation">
+            <div class="section-title-row ai-title">
+                <div>
+                    <h2>AI Explanation</h2>
+                    <p>Plain-English explanation of the calculated dashboard data</p>
+                </div>
+                <button id="ai-explain-button" class="secondary-button" type="button">
+                    Generate AI Explanation
+                </button>
+            </div>
+            <div id="ai-explanation-output" class="ai-explanation-output">
+                Generate an explanation after loading a company.
+            </div>
+        </section>
+
+        <footer class="dashboard-footer">
+            This app is for educational financial analysis only and is not investment advice.
+        </footer>
     </main>
 
     <script src="{{ url_for('static', filename='app.js') }}"></script>

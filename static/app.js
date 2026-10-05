@@ -1,10 +1,13 @@
 let charts = {};
 let activeSection = "overview";
+let currentTicker = "AAPL";
 
 const form = document.querySelector("#search-form");
 const tickerInput = document.querySelector("#ticker-input");
 const message = document.querySelector("#message");
 const tabButtons = document.querySelectorAll(".tab-button");
+const aiExplainButton = document.querySelector("#ai-explain-button");
+const aiExplanationOutput = document.querySelector("#ai-explanation-output");
 
 form.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -15,6 +18,10 @@ tabButtons.forEach(function (button) {
     button.addEventListener("click", function () {
         switchSection(button.dataset.section);
     });
+});
+
+aiExplainButton.addEventListener("click", function () {
+    generateAIExplanation();
 });
 
 async function loadCompany(ticker) {
@@ -42,6 +49,34 @@ async function loadCompany(ticker) {
     }
 }
 
+async function generateAIExplanation() {
+    if (!currentTicker) {
+        showAIExplanation("Load a company before generating an explanation.", true);
+        return;
+    }
+
+    aiExplainButton.disabled = true;
+    aiExplainButton.textContent = "Generating...";
+    showAIExplanation("Generating explanation...", false);
+
+    try {
+        const response = await fetch(`/api/explain/${currentTicker}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+            showAIExplanation(data.error || "Could not generate an explanation.", true);
+            return;
+        }
+
+        showAIExplanation(data.explanation, false);
+    } catch (error) {
+        showAIExplanation("Could not reach the Flask server.", true);
+    } finally {
+        aiExplainButton.disabled = false;
+        aiExplainButton.textContent = "Generate AI Explanation";
+    }
+}
+
 function switchSection(sectionName) {
     activeSection = sectionName;
 
@@ -59,6 +94,7 @@ function switchSection(sectionName) {
 }
 
 function renderDashboard(data) {
+    currentTicker = data.ticker;
     document.querySelector("#company-name").textContent = data.companyName;
     document.querySelector("#ticker-badge").textContent = data.ticker;
     document.querySelector("#company-details").textContent = `CIK ${data.cik} | Latest fiscal year: ${data.overview.latestYear}`;
@@ -69,6 +105,7 @@ function renderDashboard(data) {
     renderMargins(data.annualData);
     renderBalanceSheet(data.annualData);
     renderObservations(data.observations);
+    showAIExplanation("Generate an explanation for the loaded company.", false);
     renderCharts(data.annualData);
     switchSection(activeSection);
 }
@@ -471,6 +508,11 @@ function formatChartPercent(value) {
 
 function showMessage(text) {
     message.textContent = text;
+}
+
+function showAIExplanation(text, isError) {
+    aiExplanationOutput.textContent = text;
+    aiExplanationOutput.classList.toggle("error", isError);
 }
 
 loadCompany("AAPL");

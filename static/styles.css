@@ -124,6 +124,21 @@ button:hover {
     background: var(--accent-dark);
 }
 
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.secondary-button {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--text);
+}
+
+.secondary-button:hover {
+    background: var(--surface-muted);
+}
+
 .company-header {
     display: flex;
     justify-content: space-between;
@@ -209,6 +224,11 @@ button:hover {
 }
 
 .observations-section {
+    margin-top: 26px;
+    background: var(--surface);
+}
+
+.ai-section {
     margin-top: 26px;
     background: var(--surface);
 }
@@ -322,6 +342,32 @@ button:hover {
     border-bottom: 0;
 }
 
+.ai-title {
+    padding-top: 0;
+}
+
+.ai-explanation-output {
+    border-bottom: 1px solid var(--line-soft);
+    color: var(--text);
+    font-size: 0.94rem;
+    line-height: 1.6;
+    padding: 14px 0;
+    white-space: pre-wrap;
+}
+
+.ai-explanation-output.error {
+    color: var(--danger);
+    font-weight: 700;
+}
+
+.dashboard-footer {
+    margin-top: 28px;
+    border-top: 1px solid var(--line-soft);
+    color: var(--muted);
+    font-size: 0.82rem;
+    padding-top: 14px;
+}
+
 @media (max-width: 820px) {
     .app-bar,
     .company-header,
@@ -353,6 +399,10 @@ button:hover {
         display: block;
         margin-top: 6px;
         text-align: left;
+    }
+
+    .ai-title .secondary-button {
+        margin-top: 12px;
     }
 
     .financial-layout {

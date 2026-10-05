@@ -40,6 +40,26 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
+Create a local `.env` file for your OpenAI API key:
+
+```bash
+touch .env
+```
+
+Add your API key to `.env`:
+
+```text
+OPENAI_API_KEY=your_api_key_here
+```
+
+You can optionally choose the OpenAI model in `.env`:
+
+```text
+OPENAI_MODEL=gpt-5-mini
+```
+
+Never commit your OpenAI API key. This project keeps `.env` ignored in `.gitignore`, but you should still be careful not to paste secrets into code, screenshots, commits, or shared files.
+
 Run the app:
 
 ```bash
