@@ -55,6 +55,128 @@ def calculate_growth(current_value, previous_value):
     return safe_divide(current_value - previous_value, previous_value)
 
 
+def format_percent_change(value):
+    return f"{abs(value) * 100:.1f}%"
+
+
+def format_percentage_points(value):
+    return f"{abs(value) * 100:.1f} percentage points"
+
+
+def describe_value_change(metric_name, latest_value, previous_value, latest_year, previous_year):
+    change = calculate_growth(latest_value, previous_value)
+
+    if change is None:
+        return None
+
+    if change > 0:
+        return (
+            f"{metric_name} increased by {format_percent_change(change)} "
+            f"from {previous_year} to {latest_year}."
+        )
+
+    if change < 0:
+        return (
+            f"{metric_name} decreased by {format_percent_change(change)} "
+            f"from {previous_year} to {latest_year}."
+        )
+
+    return f"{metric_name} was unchanged from {previous_year} to {latest_year}."
+
+
+def describe_ratio_change(
+    metric_name,
+    latest_ratio,
+    previous_ratio,
+    latest_year,
+    previous_year,
+    positive_word,
+    negative_word,
+):
+    if latest_ratio is None or previous_ratio is None:
+        return None
+
+    change = latest_ratio - previous_ratio
+
+    if change > 0:
+        return (
+            f"{metric_name} {positive_word} by {format_percentage_points(change)} "
+            f"from {previous_year} to {latest_year}."
+        )
+
+    if change < 0:
+        return (
+            f"{metric_name} {negative_word} by {format_percentage_points(change)} "
+            f"from {previous_year} to {latest_year}."
+        )
+
+    return f"{metric_name} was unchanged from {previous_year} to {latest_year}."
+
+
+def build_observations(annual_data):
+    """Create short factual observations from the latest two annual rows."""
+    if len(annual_data) < 2:
+        return []
+
+    previous_year = annual_data[-2]
+    latest_year = annual_data[-1]
+    observations = []
+
+    revenue_observation = describe_value_change(
+        "Revenue",
+        latest_year["revenue"],
+        previous_year["revenue"],
+        latest_year["year"],
+        previous_year["year"],
+    )
+    net_income_observation = describe_value_change(
+        "Net income",
+        latest_year["net_income"],
+        previous_year["net_income"],
+        latest_year["year"],
+        previous_year["year"],
+    )
+    profit_margin_observation = describe_ratio_change(
+        "Net profit margin",
+        latest_year["profit_margin"],
+        previous_year["profit_margin"],
+        latest_year["year"],
+        previous_year["year"],
+        "improved",
+        "declined",
+    )
+    operating_margin_observation = describe_ratio_change(
+        "Operating margin",
+        latest_year["operating_margin"],
+        previous_year["operating_margin"],
+        latest_year["year"],
+        previous_year["year"],
+        "improved",
+        "declined",
+    )
+    liabilities_observation = describe_ratio_change(
+        "Liabilities as a percentage of assets",
+        latest_year["liabilities_to_assets"],
+        previous_year["liabilities_to_assets"],
+        latest_year["year"],
+        previous_year["year"],
+        "increased",
+        "decreased",
+    )
+
+    for observation in [
+        revenue_observation,
+        net_income_observation,
+        profit_margin_observation,
+        operating_margin_observation,
+        liabilities_observation,
+    ]:
+        if observation is not None:
+            observations.append(observation)
+
+    return observations
+
+
 def is_annual_10k_fact(fact):
     form = (fact.get("form") or "").upper()
     fiscal_period = (fact.get("fp") or "").upper()
@@ -241,5 +363,6 @@ def build_dashboard_data(company_facts):
                 latest_year["net_income"], latest_year["assets"]
             ),
         },
+        "observations": build_observations(annual_data),
         "annualData": annual_data,
     }

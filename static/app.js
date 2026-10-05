@@ -68,6 +68,7 @@ function renderDashboard(data) {
     renderPerformance(data.annualData);
     renderMargins(data.annualData);
     renderBalanceSheet(data.annualData);
+    renderObservations(data.observations);
     renderCharts(data.annualData);
     switchSection(activeSection);
 }
@@ -139,6 +140,24 @@ function fillTable(selector, rows) {
         });
 
         tableBody.appendChild(tableRow);
+    });
+}
+
+function renderObservations(observations) {
+    const observationsList = document.querySelector("#observations-list");
+    observationsList.innerHTML = "";
+
+    if (!observations || observations.length === 0) {
+        const emptyItem = document.createElement("li");
+        emptyItem.textContent = "Not enough year-over-year data is available for observations.";
+        observationsList.appendChild(emptyItem);
+        return;
+    }
+
+    observations.forEach(function (observation) {
+        const listItem = document.createElement("li");
+        listItem.textContent = observation;
+        observationsList.appendChild(listItem);
     });
 }
 
