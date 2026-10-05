@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Financial Health Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <main class="dashboard-shell">
+        <header class="app-bar">
+            <div class="app-brand">
+                <h1>Financial Health Dashboard</h1>
+                <p>CMU 15-113 Project 2</p>
+            </div>
+
+            <form id="search-form" class="ticker-search">
+                <label for="ticker-input">Ticker</label>
+                <div class="search-row">
+                    <input id="ticker-input" type="text" value="AAPL" placeholder="AAPL" autocomplete="off">
+                    <button type="submit">Search</button>
+                </div>
+            </form>
+        </header>
+
+        <section class="company-header" aria-label="Company overview">
+            <div class="company-title">
+                <h2 id="company-name">Loading company...</h2>
+                <span id="ticker-badge">--</span>
+            </div>
+            <div class="company-meta">
+                <p id="company-details"></p>
+                <p id="data-source"></p>
+            </div>
+        </section>
+
+        <nav class="section-tabs" aria-label="Dashboard sections">
+            <a href="#" class="active-tab">Overview</a>
+            <span>Performance</span>
+            <span>Margins</span>
+            <span>Balance Sheet</span>
+        </nav>
+
+        <p id="message" class="message" role="status"></p>
+
+        <section class="financial-section" aria-label="Financial overview">
+            <div class="section-title-row">
+                <div>
+                    <h2>Financial Overview</h2>
+                    <p>Annual figures from the mock starter data</p>
+                </div>
+                <span>USD billions unless noted</span>
+            </div>
+
+            <div class="financial-layout">
+                <div class="summary-table-wrap">
+                    <table class="summary-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Latest FY</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Revenue</td>
+                                <td id="revenue-year">--</td>
+                                <td id="revenue-card">--</td>
+                            </tr>
+                            <tr>
+                                <td>Net Income</td>
+                                <td id="net-income-year">--</td>
+                                <td id="net-income-card">--</td>
+                            </tr>
+                            <tr>
+                                <td>Profit Margin</td>
+                                <td id="profit-margin-year">--</td>
+                                <td id="profit-margin-card">--</td>
+                            </tr>
+                            <tr>
+                                <td>Debt to Assets</td>
+                                <td id="debt-assets-year">--</td>
+                                <td id="debt-assets-card">--</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="chart-area">
+                    <div class="chart-heading">
+                        <h3>Revenue and Net Income</h3>
+                        <p>Annual trend</p>
+                    </div>
+                    <div class="chart-wrap">
+                        <canvas id="financial-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
