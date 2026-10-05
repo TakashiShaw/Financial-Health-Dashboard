@@ -106,11 +106,19 @@ function renderChart(annualData) {
 }
 
 function formatCurrency(value) {
+    if (value === null || value === undefined || Number.isNaN(value)) {
+        return "N/A";
+    }
+
     const billions = value / 1_000_000_000;
     return `$${billions.toFixed(1)}B`;
 }
 
 function formatPercent(value) {
+    if (value === null || value === undefined || Number.isNaN(value)) {
+        return "N/A";
+    }
+
     return `${(value * 100).toFixed(1)}%`;
 }
 

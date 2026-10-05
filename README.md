@@ -2,7 +2,7 @@
 
 A beginner-friendly Flask project for CMU 15-113 Project 2.
 
-The app lets a user search for a public company ticker. The current starter version uses mock Apple data so the frontend dashboard works before SEC EDGAR integration is added.
+The app lets a user search for a public company ticker and view financial data from SEC EDGAR Company Facts.
 
 ## Architecture
 
@@ -52,15 +52,14 @@ Open the app in your browser:
 http://127.0.0.1:5001
 ```
 
-## Current Starter Behavior
+## Current Behavior
 
 - Homepage route: `/`
 - API route: `/api/company/<ticker>`
-- Mock data is currently available for `AAPL`
-- The dashboard shows overview cards and a Chart.js revenue/net income chart
+- Real SEC EDGAR Company Facts data is fetched by ticker
+- The dashboard shows a financial summary table and a Chart.js revenue/net income chart
 
 ## Next Steps
 
-- Add real SEC EDGAR Company Facts requests in `sec_client.py`
 - Add more metric calculations in `financial_metrics.py`
 - Improve error handling for missing or incomplete SEC data
