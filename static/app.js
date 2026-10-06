@@ -383,8 +383,10 @@ function filterMissingDatasets(datasets) {
 
 function moneyChartOptions(yAxisTitle) {
     return {
+        animation: false,
         maintainAspectRatio: false,
         responsive: true,
+        transitions: noChartTransitions(),
         plugins: {
             tooltip: {
                 callbacks: {
@@ -408,8 +410,10 @@ function moneyChartOptions(yAxisTitle) {
 
 function percentChartOptions(yAxisTitle) {
     return {
+        animation: false,
         maintainAspectRatio: false,
         responsive: true,
+        transitions: noChartTransitions(),
         plugins: {
             tooltip: {
                 callbacks: {
@@ -437,8 +441,10 @@ function percentChartOptions(yAxisTitle) {
 
 function mixedMoneyPercentOptions(moneyTitle, percentTitle) {
     return {
+        animation: false,
         maintainAspectRatio: false,
         responsive: true,
+        transitions: noChartTransitions(),
         interaction: {
             mode: "index",
             intersect: false,
@@ -479,6 +485,21 @@ function mixedMoneyPercentOptions(moneyTitle, percentTitle) {
                         return `${value}%`;
                     },
                 },
+            },
+        },
+    };
+}
+
+function noChartTransitions() {
+    return {
+        active: {
+            animation: {
+                duration: 0,
+            },
+        },
+        resize: {
+            animation: {
+                duration: 0,
             },
         },
     };
